@@ -20,17 +20,19 @@ void StreamReassembler::push_substring(const std::string &data, const size_t ind
     std::vector<BlockNode> res;
     for (size_t pos = 0; pos < data.size(); pos++)
         res.push_back({pos + index, data[pos], false});
-    if (eof) res.push_back({data.size() + index, ' ', true});
+    if (eof)
+        res.push_back({data.size() + index, ' ', true});
 
     size_t pos = 0;
-    while (pos < res.size() && pos + index < _required_index) 
+    while (pos < res.size() && pos + index < _required_index)
         pos++;
     while (pos < res.size() && pos + index == _required_index) {
         if (res[pos].is_end)
             _output.end_input();
+        else if (_output.remaining_capacity())
+            _output.write(std::string{res[pos].data});
         else
-            if (_output.remaining_capacity()) _output.write(std::string{res[pos].data});
-            else break;
+            break;
         pos++;
         _required_index++;
     }
@@ -38,18 +40,18 @@ void StreamReassembler::push_substring(const std::string &data, const size_t ind
     while (_waiting.size() && _waiting.begin()->index == _required_index) {
         auto it = _waiting.begin();
         _waiting.erase(_waiting.begin());
-
         if (it->is_end)
             _output.end_input();
+        else if (_output.remaining_capacity())
+            _output.write(std::string{it->data});
         else
-            if (_output.remaining_capacity()) _output.write(std::string{it->data});
-            else break;
+            break;
 
         _required_index++;
     }
     while (pos < res.size()) {
         _waiting.insert(res[pos]);
-        if (_waiting.size() > _capacity + (--_waiting.end())->is_end)
+        if (_waiting.size() > _capacity)
             _waiting.erase(--_waiting.end());
         pos++;
     }
