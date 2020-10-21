@@ -20,13 +20,13 @@ void get_URL(const string &host, const string &path) {
     TCPSocket soc{};
     soc.connect(Address{host, "http"});
     string info = "GET " + path + " HTTP/1.1\r\nHost: " + host + "\r\n\r\n";
-    
+
     soc.write(info);
     soc.shutdown(SHUT_WR);
 
     while (!soc.eof())
         cout << soc.read();
-    
+
     soc.close();
 
     cerr << "Function called: get_URL(" << host << ", " << path << ").\n";

@@ -4,7 +4,10 @@
 #include "byte_stream.hh"
 
 #include <cstdint>
+#include <memory>
+#include <set>
 #include <string>
+#include <vector>
 
 //! \brief A class that assembles a series of excerpts from a byte stream (possibly out of order,
 //! possibly overlapping) into an in-order byte stream.
@@ -14,6 +17,18 @@ class StreamReassembler {
 
     ByteStream _output;  //!< The reassembled in-order byte stream
     size_t _capacity;    //!< The maximum number of bytes
+
+    uint64_t _required_index;
+
+    struct BlockNode {
+        size_t index;
+        char data;
+        bool is_end;
+
+        bool operator<(const BlockNode &node) const { return index < node.index; }
+    };
+
+    std::set<BlockNode> _waiting;
 
   public:
     //! \brief Construct a `StreamReassembler` that will store up to `capacity` bytes.
