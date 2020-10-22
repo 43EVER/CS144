@@ -29,6 +29,7 @@ class StreamReassembler {
     };
 
     std::set<BlockNode> _waiting;
+    size_t eof_node_count;
 
   public:
     //! \brief Construct a `StreamReassembler` that will store up to `capacity` bytes.
@@ -61,6 +62,8 @@ class StreamReassembler {
     //! \brief Is the internal state empty (other than the output stream)?
     //! \returns `true` if no substrings are waiting to be assembled
     bool empty() const;
+
+    uint64_t get_required_index() const { return _required_index; }
 };
 
 #endif  // SPONGE_LIBSPONGE_STREAM_REASSEMBLER_HH

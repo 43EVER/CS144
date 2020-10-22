@@ -18,6 +18,7 @@ void DUMMY_CODE(Targs &&... /* unused */) {}
 size_t ByteStream::write(const std::string &data) {
     if (_is_end)
         return 0;
+
     int len = data.length();
     if (len + buffer.size() > _capacity)
         len = _capacity - buffer.size();
