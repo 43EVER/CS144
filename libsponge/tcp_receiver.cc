@@ -21,8 +21,9 @@ void TCPReceiver::segment_received(const TCPSegment &seg) {
     auto seqno = seg.header().seqno;
     uint64_t index = unwrap(seqno, isn, checkpoint);
     checkpoint = index;
-    
-    if (index > 0) index -= 1;
+
+    if (index > 0)
+        index -= 1;
     _reassembler.push_substring(seg.payload().copy(), index, seg.header().fin);
 }
 
