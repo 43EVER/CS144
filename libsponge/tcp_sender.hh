@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <queue>
+#include <set>
 
 //! \brief The "sender" part of a TCP implementation.
 
@@ -19,6 +20,20 @@ class TCPSender {
   private:
     //! our initial sequence number, the number for our SYN.
     WrappingInt32 _isn;
+
+    std::queue<TCPSegment> _segments_outstanding{};
+    size_t _bytes_in_flight = 0;
+    size_t _recv_ackno = 0;
+    bool _syn_flag = false;
+    bool _fin_flag = false;
+    size_t _window_size = 1;
+
+    size_t _timer = 0;
+    bool _timer_running = false;
+    size_t _retransmission_timeout = 0;
+    size_t _consecutive_retransmission = 0;
+
+    void send_segment(TCPSegment &seg);
 
     //! outbound queue of segments that the TCPSender wants sent
     std::queue<TCPSegment> _segments_out{};

@@ -42,8 +42,9 @@ void ByteStream::pop_output(const size_t len) {
 }
 
 std::string ByteStream::read(const size_t len) {
-    std::string res = peek_output(len);
-    pop_output(len);
+    size_t size = std::min(len, buffer_size());
+    std::string res = peek_output(size);
+    pop_output(size);
 
     return res;
 }
